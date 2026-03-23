@@ -20,7 +20,7 @@ AniSearch is a next-generation anime discovery engine. Instead of relying on exa
 ![Preview](Preview.png)
 ![Preview](Preview2.png)
 
-Live preview - [Click Here](https://github.com/Abhay557/AniSearch)
+Live preview - [Click Here](https://anisearch557.vercel.app)
 
 ---
 
