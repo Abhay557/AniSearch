@@ -129,7 +129,7 @@ Search for anime by natural language description.
 
 ---
 
-## 🧠 How It Works
+##  How It Works
 
 1. **Data Collection** — `scrape.js` streams all anime from the Jikan v4 API into `jikan_full_dump.json`
 2. **Embedding Generation** — Each anime's title + genres + synopsis is encoded into a 384-dimensional vector using the [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) model
