@@ -38,11 +38,6 @@ AniSearch is a next-generation anime discovery engine. Instead of relying on exa
 
 ---
 
-## Project Structure
-
-![Project Structure](ProjectStructure.png)
----
-
 ## Getting Started
 
 ### Prerequisites
