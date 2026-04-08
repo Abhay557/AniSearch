@@ -135,6 +135,19 @@ async def search(q: str = Query(..., min_length=1)):
     except Exception as e:
         return {"results": [], "error": str(e)}
 
+@app.get("/anime/{item_id}")
+async def get_anime(item_id: str):
+    if not anime_records:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=503, detail="Backend not ready")
+        
+    for anime in anime_records:
+        if str(anime.get('mal_id')) == item_id or str(anime.get('title')) == item_id:
+            return anime
+            
+    from fastapi import HTTPException
+    raise HTTPException(status_code=404, detail="Anime not found")
+
 @app.get("/")
 def health_check():
     return {

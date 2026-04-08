@@ -17,31 +17,32 @@ export default function AnimeDetails() {
     // If anime data isn't passed via router-state, fetch it directly
     if (!anime && mal_id) {
       setLoading(true);
-      const isId = /^\d+$/.test(mal_id);
-      const url = isId
-        ? `https://api.jikan.moe/v4/anime/${mal_id}`
-        : `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(mal_id)}&limit=1`;
+      
+      const BACKEND_URL = "https://abhay557-animesearch.hf.space";
+      const url = `${BACKEND_URL}/anime/${encodeURIComponent(mal_id)}`;
 
       fetch(url)
-        .then(res => res.json())
-        .then(resData => {
-          const data = isId ? resData.data : resData.data?.[0];
-          if (data) {
+        .then(res => {
+          if (!res.ok) throw new Error("Not found");
+          return res.json();
+        })
+        .then(data => {
+          if (data && !data.error) {
             setAnime({
               mal_id: data.mal_id,
               title: data.title,
-              genres: (data.genres || []).map(g => g.name).join(', '),
+              genres: data.genres,
               synopsis: data.synopsis,
               episodes: data.episodes,
-              mal_score: data.score,
-              image: data.images?.jpg?.large_image_url,
+              mal_score: data.mal_score,
+              image: data.image,
               duration: data.duration,
               rating: data.rating,
               rank: data.rank,
               popularity: data.popularity,
               season: data.season,
               year: data.year,
-              status: data.status
+              status: data.status || 'Completed'
             });
           } else {
             setError(true);
