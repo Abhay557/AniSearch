@@ -5,12 +5,52 @@ import { Star, Play, List, AlertCircle, ArrowLeft, Calendar, Film, Clock, Activi
 export default function AnimeDetails() {
   const { state } = useLocation();
   const { mal_id } = useParams();
-  const anime = state?.anime;
+
+  const [anime, setAnime] = useState(state?.anime || null);
+  const [loading, setLoading] = useState(!state?.anime);
+  const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [mal_id]);
+
+    // If anime data isn't passed via router-state, fetch it directly
+    if (!anime && mal_id) {
+      setLoading(true);
+      const isId = /^\d+$/.test(mal_id);
+      const url = isId
+        ? `https://api.jikan.moe/v4/anime/${mal_id}`
+        : `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(mal_id)}&limit=1`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(resData => {
+          const data = isId ? resData.data : resData.data?.[0];
+          if (data) {
+            setAnime({
+              mal_id: data.mal_id,
+              title: data.title,
+              genres: (data.genres || []).map(g => g.name).join(', '),
+              synopsis: data.synopsis,
+              episodes: data.episodes,
+              mal_score: data.score,
+              image: data.images?.jpg?.large_image_url,
+              duration: data.duration,
+              rating: data.rating,
+              rank: data.rank,
+              popularity: data.popularity,
+              season: data.season,
+              year: data.year,
+              status: data.status
+            });
+          } else {
+            setError(true);
+          }
+        })
+        .catch(err => setError(true))
+        .finally(() => setLoading(false));
+    }
+  }, [mal_id, anime]);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -18,7 +58,18 @@ export default function AnimeDetails() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  if (!anime) {
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center relative z-10 text-white bg-surface-900">
+        <div className="flex flex-col items-center gap-4 animate-pulse">
+          <div className="w-12 h-12 border-4 border-orange-500/20 border-t-orange-500 rounded-full animate-spin" />
+          <span className="text-zinc-500 font-medium">Reconstructing from the void...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !anime) {
     return (
       <div className="min-h-screen flex items-center justify-center relative z-10 text-white">
         <div className="text-center p-8 bg-surface-800/40 backdrop-blur-2xl border border-white/5 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">
@@ -38,9 +89,9 @@ export default function AnimeDetails() {
   const scoreText = anime.mal_score && anime.mal_score !== 'N/A' ? anime.mal_score.toFixed(2) : '—';
   const genres = anime.genres ? anime.genres.split(',').map(g => g.trim()).filter(Boolean) : [];
   const statusFormatted = anime.status || (anime.episodes === '?' || anime.episodes == null ? 'Ongoing' : 'Completed');
-  
+
   // Format Season + Year if available
-  const seasonYear = anime.season && anime.season !== '?' && anime.year && anime.year !== '?' 
+  const seasonYear = anime.season && anime.season !== '?' && anime.year && anime.year !== '?'
     ? `${anime.season.charAt(0).toUpperCase() + anime.season.slice(1)} ${anime.year}`
     : (anime.year && anime.year !== '?' ? anime.year : 'Unknown');
 
@@ -62,9 +113,9 @@ export default function AnimeDetails() {
       {/* ─── Immersive Blurred Backdrop ─── */}
       {anime.image && (
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
-          <img 
-            src={anime.image} 
-            alt="backdrop" 
+          <img
+            src={anime.image}
+            alt="backdrop"
             className="w-full h-full object-cover blur-[100px] scale-125 opacity-20 saturate-150 transform-gpu"
           />
           {/* Gradients to blend backdrop seamlessly into the void */}
@@ -75,18 +126,18 @@ export default function AnimeDetails() {
 
       {/* ─── Main Content Wrapper ─── */}
       <main className="relative z-10 max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 animate-fade-in">
-        
+
         {/* Top Header Navigation */}
         <header className="flex items-center justify-between mb-6 md:mb-8">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="group flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-zinc-300 hover:text-white transition-all backdrop-blur-md shadow-sm"
           >
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
             <span className="text-[13px] font-semibold tracking-wide">Back to Explore</span>
           </Link>
-          
-          <button 
+
+          <button
             onClick={handleShare}
             className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-orange-500/10 border border-white/10 hover:border-orange-500/30 rounded-full text-zinc-300 hover:text-orange-400 transition-all backdrop-blur-md shadow-sm"
           >
@@ -97,33 +148,33 @@ export default function AnimeDetails() {
 
         {/* ─── Content Grid ─── */}
         <div className="flex flex-col lg:flex-row gap-8 xl:gap-12">
-          
+
           {/* Left Column: Visuals & CTAs */}
           <div className="w-full md:w-[260px] lg:w-[280px] flex-shrink-0 flex flex-col gap-4 mx-auto lg:mx-0">
-            
+
             {/* The Poster presentation */}
             <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)] border border-white/10 group">
-               <img
-                  src={anime.image}
-                  alt={anime.title}
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                  loading="eager"
-               />
-               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-90" />
-               
-               {/* Elegant Score Display */}
-               <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-orange-400 font-black mb-0.5 opacity-90">Rating</span>
-                    <div className="flex items-baseline gap-1">
-                      <span className="font-black text-3xl text-white leading-none tracking-tighter">{scoreText}</span>
-                      {scoreText !== '—' && <span className="text-zinc-400 font-bold text-xs">/ 10</span>}
-                    </div>
+              <img
+                src={anime.image}
+                alt={anime.title}
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-90" />
+
+              {/* Elegant Score Display */}
+              <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
+                <div className="flex flex-col">
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-orange-400 font-black mb-0.5 opacity-90">Rating</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-black text-3xl text-white leading-none tracking-tighter">{scoreText}</span>
+                    {scoreText !== '—' && <span className="text-zinc-400 font-bold text-xs">/ 10</span>}
                   </div>
-                  <div className="flex items-center gap-0.5 text-orange-400 drop-shadow-[0_0_10px_rgba(249,115,22,0.5)] mb-0.5">
-                    <Star className="w-5 h-5 fill-current" />
-                  </div>
-               </div>
+                </div>
+                <div className="flex items-center gap-0.5 text-orange-400 drop-shadow-[0_0_10px_rgba(249,115,22,0.5)] mb-0.5">
+                  <Star className="w-5 h-5 fill-current" />
+                </div>
+              </div>
             </div>
 
             {/* Core Interactions */}
@@ -133,7 +184,7 @@ export default function AnimeDetails() {
                 <Play className="w-4 h-4 fill-current relative z-10" />
                 <span className="relative z-10">Play Trailer</span>
               </button>
-              
+
               <button className="w-full bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-white/20 text-zinc-300 hover:text-white py-3 px-6 rounded-xl font-semibold text-sm flex items-center justify-center gap-2.5 transition-all duration-300 backdrop-blur-md">
                 <List className="w-4 h-4" />
                 Episode Roster
@@ -143,13 +194,13 @@ export default function AnimeDetails() {
 
           {/* Right Column: Deep Information */}
           <div className="flex-1 flex flex-col pt-1 lg:pt-4">
-            
+
             {/* Title Block & Taxonomy */}
             <div className="mb-8">
               <div className="flex flex-wrap gap-2 mb-4">
                 {genres.map((genre, i) => (
-                  <span 
-                    key={i} 
+                  <span
+                    key={i}
                     className="px-3 py-1 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 text-orange-300 text-[10px] sm:text-xs font-bold uppercase tracking-widest rounded-full backdrop-blur-md transition-colors cursor-default"
                   >
                     {genre}
@@ -185,7 +236,7 @@ export default function AnimeDetails() {
                 </p>
               </div>
             </div>
-            
+
           </div>
         </div>
       </main>
