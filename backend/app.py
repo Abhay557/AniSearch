@@ -50,12 +50,19 @@ async def lifespan(app: FastAPI):
                 image_url = images.get('jpg', {}).get('large_image_url', '')
 
                 anime_records.append({
+                    'mal_id': anime.get('mal_id', '?'),
                     'title': anime.get('title', 'Unknown'),
                     'genres': genres,
                     'synopsis': synopsis,
                     'episodes': anime.get('episodes', '?'),
                     'mal_score': anime.get('score', 'N/A'),
-                    'image': image_url
+                    'image': image_url,
+                    'duration': anime.get('duration', '?'),
+                    'rating': anime.get('rating', '?'),
+                    'rank': anime.get('rank', '?'),
+                    'popularity': anime.get('popularity', '?'),
+                    'season': anime.get('season', '?'),
+                    'year': anime.get('year', '?')
                 })
             print(f"✅ Successfully loaded {len(anime_records)} anime records.", flush=True)
         else:
@@ -109,13 +116,20 @@ async def search(q: str = Query(..., min_length=1)):
             if s > 0.12: # Slightly lower threshold for better results
                 item = anime_records[idx]
                 output.append({
+                    "mal_id": item.get('mal_id'),
                     "title": item['title'],
                     "genres": item['genres'],
                     "synopsis": item['synopsis'],
                     "episodes": item['episodes'],
                     "score": s,
                     "mal_score": item['mal_score'],
-                    "image": item['image']
+                    "image": item['image'],
+                    "duration": item.get('duration'),
+                    "rating": item.get('rating'),
+                    "rank": item.get('rank'),
+                    "popularity": item.get('popularity'),
+                    "season": item.get('season'),
+                    "year": item.get('year')
                 })
         return {"results": output}
     except Exception as e:
