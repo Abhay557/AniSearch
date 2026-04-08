@@ -50,6 +50,7 @@ async def lifespan(app: FastAPI):
                 image_url = images.get('jpg', {}).get('large_image_url', '')
 
                 anime_records.append({
+                    'mal_id': anime.get('mal_id', '?'),
                     'title': anime.get('title', 'Unknown'),
                     'genres': genres,
                     'synopsis': synopsis,
@@ -109,6 +110,7 @@ async def search(q: str = Query(..., min_length=1)):
             if s > 0.12: # Slightly lower threshold for better results
                 item = anime_records[idx]
                 output.append({
+                    "mal_id": item.get('mal_id'),
                     "title": item['title'],
                     "genres": item['genres'],
                     "synopsis": item['synopsis'],
