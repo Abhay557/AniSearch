@@ -50,8 +50,15 @@ function ScoreRing({ score }) {
 /* ─── Skeleton Card ───────────────────────── */
 function SkeletonCard() {
   return (
-    <div className="aspect-[2/3] rounded-[20px] overflow-hidden bg-surface-800 border border-white/[0.04]">
-      <div className="skeleton w-full h-full" />
+    <div className="aspect-[2/3] rounded-[24px] overflow-hidden bg-surface-800/60 border border-white/[0.02] shadow-xl backdrop-blur-sm relative">
+      <div className="skeleton absolute inset-0 opacity-60" />
+      <div className="absolute top-4 right-4 skeleton w-10 h-10 rounded-full opacity-60" />
+      <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-2">
+         <div className="skeleton h-5 w-3/4 rounded-md opacity-60" />
+         <div className="skeleton h-3 w-full rounded-md opacity-50" />
+         <div className="skeleton h-3 w-5/6 rounded-md opacity-50" />
+         <div className="skeleton h-3 w-1/2 rounded-md opacity-50" />
+      </div>
     </div>
   );
 }
@@ -174,19 +181,19 @@ export default function Home({ cachedResults, setCachedResults, cachedQuery, set
   return (
     <main className="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
       {/* ─── Hero Section ─── */}
-      <section className={`flex flex-col items-center text-center transition-all duration-700 ease-out ${
-        hasSearched ? 'pt-10 pb-8' : 'pt-24 md:pt-36 pb-16'
+      <section className={`flex flex-col items-center text-center transition-all duration-[800ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        hasSearched ? 'pt-12 pb-12' : 'pt-24 md:pt-36 pb-16'
       }`}>
         {/* Logo / Brand */}
-        <div className={`transition-all duration-700 ease-out ${hasSearched ? 'mb-4' : 'mb-8'}`}>
+        <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${hasSearched ? 'mb-6 md:mb-8' : 'mb-8 md:mb-12'}`}>
           {!hasSearched && (
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] text-[13px] text-zinc-400 font-medium mb-6 animate-fade-in">
               <Zap className="w-3.5 h-3.5 text-orange-400" />
               Powered by AI Semantic Search
             </div>
           )}
-          <h1 className={`font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-zinc-600 transition-all duration-700 ${
-            hasSearched ? 'text-2xl md:text-3xl' : 'text-5xl md:text-7xl lg:text-8xl'
+          <h1 className={`font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-zinc-500 transition-all duration-[800ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            hasSearched ? 'text-3xl md:text-4xl' : 'text-5xl md:text-7xl lg:text-8xl'
           }`}>
             AniSearch
           </h1>
@@ -265,14 +272,16 @@ export default function Home({ cachedResults, setCachedResults, cachedQuery, set
 
       {/* ─── Loading Skeletons ─── */}
       {isSearching && (
-        <section className="pb-20">
-          <div className="flex items-center justify-between mb-6">
-            <div className="skeleton h-7 w-40" />
-            <div className="skeleton h-5 w-28" />
+        <section className="pb-20 animate-fade-in max-w-[1320px] mx-auto transition-all">
+          <div className="flex items-center justify-between mb-8">
+            <div className="skeleton h-8 w-48 rounded-lg" />
+            <div className="skeleton h-6 w-32 rounded-lg" />
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <SkeletonCard key={i} />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
+            {Array.from({ length: 15 }).map((_, i) => (
+              <div key={i} className="animate-fade-in" style={{ animationDelay: `${i * 40}ms` }}>
+                <SkeletonCard />
+              </div>
             ))}
           </div>
         </section>
@@ -280,16 +289,16 @@ export default function Home({ cachedResults, setCachedResults, cachedQuery, set
 
       {/* ─── Results Grid ─── */}
       {!isSearching && cachedResults.length > 0 && (
-        <section className="pb-20">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+        <section className="pb-20 animate-fade-in max-w-[1320px] mx-auto">
+          <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-sm">
               Top Matches
             </h2>
-            <span className="text-zinc-500 text-sm font-medium">
-              {cachedResults.length} results
+            <span className="px-4 py-1.5 bg-orange-500/10 border border-orange-500/20 text-orange-400 font-bold text-sm tracking-wide rounded-full backdrop-blur-md">
+              {cachedResults.length} Results
             </span>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
             {cachedResults.map((anime, index) => (
               <AnimeCard key={anime.title} anime={anime} index={index} />
             ))}
