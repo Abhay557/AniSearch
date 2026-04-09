@@ -50,14 +50,37 @@ function ScoreRing({ score }) {
 /* ─── Skeleton Card ───────────────────────── */
 function SkeletonCard() {
   return (
-    <div className="aspect-[2/3] rounded-[24px] overflow-hidden bg-surface-800/60 border border-white/[0.02] shadow-xl backdrop-blur-sm relative">
-      <div className="skeleton absolute inset-0 opacity-60" />
-      <div className="absolute top-4 right-4 skeleton w-10 h-10 rounded-full opacity-60" />
-      <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-2">
-         <div className="skeleton h-5 w-3/4 rounded-md opacity-60" />
-         <div className="skeleton h-3 w-full rounded-md opacity-50" />
-         <div className="skeleton h-3 w-5/6 rounded-md opacity-50" />
-         <div className="skeleton h-3 w-1/2 rounded-md opacity-50" />
+    <div className="anime-card block aspect-[2/3] cursor-default pointer-events-none">
+      <div className="skeleton absolute inset-0 opacity-20" />
+      <div className="card-overlay absolute inset-0" />
+      
+      <div className="absolute top-3 left-3 z-20">
+        <div className="skeleton h-[26px] w-[85px] rounded-full" />
+      </div>
+
+      <div className="absolute top-3 right-3 z-20">
+        <div className="skeleton w-[44px] h-[44px] rounded-full" />
+      </div>
+
+      <div className="relative z-10 p-5 flex flex-col justify-end h-full">
+        <div className="skeleton h-5 w-full rounded-md mb-2" />
+        <div className="skeleton h-5 w-3/4 rounded-md mb-3" />
+
+        <div className="skeleton h-3 w-full rounded-[4px] opacity-50 mb-2 mt-1" />
+        <div className="skeleton h-3 w-[90%] rounded-[4px] opacity-50 mb-2" />
+        <div className="skeleton h-3 w-[75%] rounded-[4px] opacity-50 mb-4" />
+
+        <div className="flex items-center gap-2 mb-3">
+          <div className="skeleton h-3 w-10 rounded-[4px]" />
+          <span className="flex-shrink-0 w-1 h-1 rounded-full bg-zinc-700" />
+          <div className="skeleton h-3 w-12 rounded-[4px]" />
+        </div>
+
+        <div className="flex flex-wrap gap-1.5">
+          <div className="skeleton h-[22px] w-[60px] rounded-[8px]" />
+          <div className="skeleton h-[22px] w-[70px] rounded-[8px]" />
+          <div className="skeleton h-[22px] w-[50px] rounded-[8px]" />
+        </div>
       </div>
     </div>
   );
